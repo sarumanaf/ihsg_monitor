@@ -10,7 +10,7 @@ Sebuah *End-to-End Data Engineering Pipeline* untuk memantau pergerakan Indeks H
 
 Proyek ini mengekstraksi data finansial secara otomatis setiap hari kerja, melakukan transformasi indikator teknikal, melakukan validasi kualitas data, menyimpannya ke Cloud Database, dan memvisualisasikannya melalui Dashboard interaktif.
 
-🔗 **[Lihat Dashboard Live di Sini] (URL_STREAMLIT_AKAN_DIISI_NANTI)**
+🔗 **[Lihat Dashboard Live di Sini](https://ihsgmonitor.streamlit.app)**
 
 ---
 
