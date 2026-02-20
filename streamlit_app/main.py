@@ -7,7 +7,7 @@ import psycopg2
 st.set_page_config(page_title="IHSG Market Monitor", layout="wide", page_icon="📈")
 
 # 2. Fungsi Ekstrak Data (Koneksi Langsung Psycopg2 Tanpa Error)
-@st.cache_data(ttl=3600) # Cache 1 jam
+@st.cache_data(ttl=300) # Cache 5 menit
 def load_data():
     db_uri = st.secrets["SUPABASE_URI"]
     conn = psycopg2.connect(db_uri)
@@ -140,8 +140,7 @@ try:
     st.markdown("<br>", unsafe_allow_html=True)
     with st.expander("📂 Tampilkan Data Historis Database (Raw Data)"):
         df_display = df.drop(columns=['vol_color']).copy()
-        df_display['updated_at'] = pd.to_datetime(df_display['updated_at']).dt.strftime('%Y-%m-%d %H:%M:%S')
-        
+        df_display['updated_at'] = pd.to_datetime(df_display['updated_at'], utc=True).dt.tz_convert('Asia/Jakarta').dt.strftime('%Y-%m-%d %H:%M:%S WIB')
         # Ubah nama kolom database menjadi bahasa manusia
         df_display = df_display.rename(columns={
             'tanggal': 'Tanggal',
@@ -158,7 +157,7 @@ try:
             'updated_at': 'Terakhir Update'
         })
         
-        # D. Susun ulang urutan kolom agar logis dan enak dibaca
+        # Susun ulang urutan kolom agar logis dan enak dibaca
         urutan_kolom = [
             'Tanggal', 'IHSG Close', 'Perubahan Harga', 'Volume Top 4', 
             'BBCA Close', 'BBRI Close', 'BMRI Close', 'BBNI Close', 
@@ -166,7 +165,7 @@ try:
         ]
         df_display = df_display[urutan_kolom]
 
-        # E. Tampilkan tabel dengan format angka
+        # Tampilkan tabel dengan format angka
         st.dataframe(df_display.sort_values('Tanggal', ascending=False).style.format({
             "IHSG Close": "{:,.2f}",
             "Perubahan Harga": "{:,.2f}",
