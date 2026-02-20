@@ -15,10 +15,10 @@ default_args = {
 }
 
 @dag(
-    dag_id='ihsg_market_monitor_v5',
+    dag_id='ihsg_market_monitor',
     default_args=default_args,
     start_date=datetime(2024, 1, 1),
-    schedule_interval='0 18 * * 1-5',
+    schedule_interval='0 11 * * 1-5',
     catchup=False,
     tags=['ihsg', 'latihan']
 )
@@ -163,7 +163,7 @@ def ihsg_etl_pipeline():
         # APPEND: Masukkan seluruh data yang sudah diproses
         df_load.to_sql('market_sentiment', engine, if_exists='append', index=False)
         print(f"{len(df_load)} baris data sukses dimasukkan!")
-        return f"Sukses Load {len(df_load)} baris data historis (V4)."
+        return f"Sukses Load {len(df_load)} baris data historis."
 
     # ---------------------------------------------------------
     # TASK 7 & 8: SKIP & ALERT
@@ -179,8 +179,8 @@ def ihsg_etl_pipeline():
         
         state_load = ti.xcom_pull(task_ids='load_to_supabase')
         
-        pesan = f"*Airflow ETL Report V5*\n\n"
-        pesan += f"Pipeline: `ihsg_market_monitor_v5`\n"
+        pesan = f"*Airflow ETL Report*\n\n"
+        pesan += f"Pipeline: `ihsg_market_monitor`\n"
         
         if ti.xcom_pull(task_ids='cek_hari_bursa') == 'skip_load':
             pesan += "Status: *Skipped (Weekend)* 💤\n"
