@@ -139,16 +139,38 @@ try:
     # 6. TABEL DATA MENTAH
     st.markdown("<br>", unsafe_allow_html=True)
     with st.expander("📂 Tampilkan Data Historis Database (Raw Data)"):
-        st.dataframe(df.sort_values('tanggal', ascending=False).style.format({
-            "ihsg_close": "{:,.2f}",
-            "top4_volume": "{:,.0f}",
-            "bbca_close": "{:,.0f}",
-            "bbri_close": "{:,.0f}",
-            "bmri_close": "{:,.0f}",
-            "bbni_close": "{:,.0f}",
-            "rsi": "{:.2f}",
-            "ma50": "{:,.2f}",
-            "diff": "{:,.2f}"
+        # A. Buang kolom pembantu (diff dan vol_color) agar tidak tampil
+        df_display = df.drop(columns=['diff', 'vol_color']).copy()
+        
+        # B. Rapikan format waktu (Buang microseconds)
+        df_display['updated_at'] = pd.to_datetime(df_display['updated_at']).dt.strftime('%Y-%m-%d %H:%M:%S')
+        
+        # C. Ubah nama kolom database menjadi bahasa manusia yang elegan
+        df_display = df_display.rename(columns={
+            'tanggal': 'Tanggal',
+            'ihsg_close': 'IHSG Close',
+            'top4_volume': 'Volume Top 4',
+            'bbca_close': 'BBCA Close',
+            'bbri_close': 'BBRI Close',
+            'bmri_close': 'BMRI Close',
+            'bbni_close': 'BBNI Close',
+            'ma50': 'MA50',
+            'rsi': 'RSI (14)',
+            'status_pasar': 'Status Pasar',
+            'updated_at': 'Terakhir Update'
+        })
+
+        # D. Tampilkan tabel dengan format angka yang sudah dikustomisasi
+        st.dataframe(df_display.sort_values('Tanggal', ascending=False).style.format({
+            "IHSG Close": "{:,.2f}",
+            "Volume Top 4": "{:,.0f}",
+            "BBCA Close": "{:,.0f}",
+            "BBRI Close": "{:,.0f}",
+            "BMRI Close": "{:,.0f}",
+            "BBNI Close": "{:,.0f}",
+            "MA50": "{:,.2f}",
+            "RSI (14)": "{:.2f}",
+            "Diff": "{:,.2f}"
         }), use_container_width=True)
 
 except Exception as e:
