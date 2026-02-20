@@ -1,0 +1,12 @@
+.venv/
+venv/
+env/
+.env
+.streamlit/secrets.toml
+airflow/logs/
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+Thumbs.db
+TEST.txt

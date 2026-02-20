@@ -1,0 +1,17 @@
+# Data Source
+yfinance
+
+# Data Processing
+pandas
+numpy<2.0.0
+
+# Database Connector
+sqlalchemy
+psycopg2-binary
+
+# Orchestration
+apache-airflow==2.9.3
+
+# Visualization
+streamlit
+plotly
