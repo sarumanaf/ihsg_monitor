@@ -2,13 +2,25 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 import psycopg2
+from datetime import datetime, timedelta
 
-# 1. Konfigurasi Halaman Dasar (Gunakan layout wide agar luas)
+# 1. Konfigurasi Halaman Dasar
 st.set_page_config(page_title="IHSG Market Monitor", layout="wide", page_icon="📈")
 
-# 2. Fungsi Ekstrak Data (Koneksi Langsung Psycopg2 Tanpa Error)
-@st.cache_data(ttl=300) # Cache 5 menit
-def load_data():
+# --- TRIK CACHE DINAMIS (UPDATE TIAP 6 JAM WIB) ---
+# Dapatkan jam saat ini di Jakarta (UTC+7)
+now_utc = datetime.utcnow()
+now_wib = now_utc + timedelta(hours=7)
+
+# Kalkulasi Blok 6-Jaman (0, 1, 2, 3)
+blok_waktu = now_wib.hour // 6
+kunci_cache = f"{now_wib.strftime('%Y-%m-%d')}_blok_{blok_waktu}"
+# --------------------------------------------------
+
+# 2. Fungsi Ekstrak Data (Dengan Cache Key)
+@st.cache_data(ttl=21600) # Pengaman tambahan: 21600 detik = 6 jam
+def load_data(key):
+    # Parameter 'key' ini memaksa Streamlit mereset cache jika nilainya berubah
     db_uri = st.secrets["SUPABASE_URI"]
     conn = psycopg2.connect(db_uri)
     
@@ -17,24 +29,19 @@ def load_data():
     df = pd.read_sql(query, conn)
     conn.close()
     
-    # Pre-processing untuk UI: Hitung selisih harga untuk warna grafik Volume
+    # Pre-processing untuk UI
     df['diff'] = df['ihsg_close'].diff()
-    # Jika naik/sama = Hijau Neon, Jika turun = Merah Neon
     df['vol_color'] = df['diff'].apply(lambda x: '#00FA9A' if x >= 0 else '#FF3333')
     
     return df
 
 try:
-    df = load_data()
+    # PANGGIL FUNGSI DENGAN KUNCI DINAMIS KITA
+    df = load_data(kunci_cache)
     
     # Ambil baris data terbaru dan kemarin
     latest = df.iloc[-1]
     prev = df.iloc[-2]
-    
-    # Judul Dasbor
-    st.markdown("<h1 style='text-align: center;'>📈 Dashboard Analisis Tren IHSG & Likuiditas Pasar</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; color: gray;'>Automated Data Pipeline via Apache Airflow | Algorithmic Sentiment Analysis</p>", unsafe_allow_html=True)
-    st.divider()
     
     # 3. BARIS METRIK UTAMA (Scorecard)
     col1, col2, col3, col4 = st.columns(4)
