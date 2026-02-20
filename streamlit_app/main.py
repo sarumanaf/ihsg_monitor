@@ -139,16 +139,14 @@ try:
     # 6. TABEL DATA MENTAH
     st.markdown("<br>", unsafe_allow_html=True)
     with st.expander("📂 Tampilkan Data Historis Database (Raw Data)"):
-        # A. Buang kolom pembantu (diff dan vol_color) agar tidak tampil
-        df_display = df.drop(columns=['diff', 'vol_color']).copy()
-        
-        # B. Rapikan format waktu (Buang microseconds)
+        df_display = df.drop(columns=['vol_color']).copy()
         df_display['updated_at'] = pd.to_datetime(df_display['updated_at']).dt.strftime('%Y-%m-%d %H:%M:%S')
         
-        # C. Ubah nama kolom database menjadi bahasa manusia yang elegan
+        # Ubah nama kolom database menjadi bahasa manusia
         df_display = df_display.rename(columns={
             'tanggal': 'Tanggal',
             'ihsg_close': 'IHSG Close',
+            'diff': 'Perubahan Harga', 
             'top4_volume': 'Volume Top 4',
             'bbca_close': 'BBCA Close',
             'bbri_close': 'BBRI Close',
@@ -159,18 +157,26 @@ try:
             'status_pasar': 'Status Pasar',
             'updated_at': 'Terakhir Update'
         })
+        
+        # D. Susun ulang urutan kolom agar logis dan enak dibaca
+        urutan_kolom = [
+            'Tanggal', 'IHSG Close', 'Perubahan Harga', 'Volume Top 4', 
+            'BBCA Close', 'BBRI Close', 'BMRI Close', 'BBNI Close', 
+            'MA50', 'RSI (14)', 'Status Pasar', 'Terakhir Update'
+        ]
+        df_display = df_display[urutan_kolom]
 
-        # D. Tampilkan tabel dengan format angka yang sudah dikustomisasi
+        # E. Tampilkan tabel dengan format angka
         st.dataframe(df_display.sort_values('Tanggal', ascending=False).style.format({
             "IHSG Close": "{:,.2f}",
+            "Perubahan Harga": "{:,.2f}",
             "Volume Top 4": "{:,.0f}",
             "BBCA Close": "{:,.0f}",
             "BBRI Close": "{:,.0f}",
             "BMRI Close": "{:,.0f}",
             "BBNI Close": "{:,.0f}",
             "MA50": "{:,.2f}",
-            "RSI (14)": "{:.2f}",
-            "Diff": "{:,.2f}"
+            "RSI (14)": "{:.2f}"
         }), use_container_width=True)
 
 except Exception as e:
