@@ -43,6 +43,12 @@ try:
     latest = df.iloc[-1]
     prev = df.iloc[-2]
     
+    # --- JUDUL DASHBOARD ---
+    st.markdown("<h1 style='text-align: center;'>📈 Dashboard Analisis Tren IHSG & Likuiditas Pasar</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; color: gray;'>Automated Data Pipeline via Apache Airflow | Algorithmic Sentiment Analysis</p>", unsafe_allow_html=True)
+    st.divider()
+    # -----------------------
+
     # 3. BARIS METRIK UTAMA (Scorecard)
     col1, col2, col3, col4 = st.columns(4)
     
