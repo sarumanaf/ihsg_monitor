@@ -143,8 +143,12 @@ try:
             "ihsg_close": "{:,.2f}",
             "top4_volume": "{:,.0f}",
             "bbca_close": "{:,.0f}",
+            "bbri_close": "{:,.0f}",
+            "bmri_close": "{:,.0f}",
+            "bbni_close": "{:,.0f}",
             "rsi": "{:.2f}",
-            "ma50": "{:,.2f}"
+            "ma50": "{:,.2f}",
+            "diff": "{:,.2f}"
         }), use_container_width=True)
 
 except Exception as e:
