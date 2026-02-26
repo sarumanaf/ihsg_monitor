@@ -7,22 +7,20 @@ from datetime import datetime, timedelta
 # 1. Konfigurasi Halaman Dasar
 st.set_page_config(page_title="IHSG Market Monitor", layout="wide", page_icon="📈")
 
-# --- TRIK CACHE DINAMIS (UPDATE TIAP 6 JAM WIB) ---
+# --- TRIK CACHE DINAMIS (UPDATE TIAP 1 JAM WIB) ---
 # Dapatkan jam saat ini di Jakarta (UTC+7)
 now_utc = datetime.utcnow()
 now_wib = now_utc + timedelta(hours=7)
 
-# Kalkulasi Blok 6-Jaman (0, 1, 2, 3)
-blok_waktu = now_wib.hour // 6
-kunci_cache = f"{now_wib.strftime('%Y-%m-%d')}_blok_{blok_waktu}"
+# Kalkulasi Blok Per 1 Jam
+kunci_cache = f"{now_wib.strftime('%Y-%m-%d_%H')}"
 # --------------------------------------------------
 
 # 2. Fungsi Ekstrak Data (Dengan Cache Key)
-@st.cache_data(ttl=21600) # Pengaman tambahan: 21600 detik = 6 jam
+@st.cache_data(ttl=3600) # Pengaman tambahan: 3600 detik = 1 jam
 def load_data(key):
     # Parameter 'key' ini memaksa Streamlit mereset cache jika nilainya berubah
     db_uri = st.secrets["SUPABASE_URI"]
-    conn = psycopg2.connect(db_uri)
     
     # Ambil data dari terlama ke terbaru
     query = "SELECT * FROM market_sentiment ORDER BY tanggal ASC"

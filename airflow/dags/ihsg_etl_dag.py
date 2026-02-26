@@ -88,7 +88,12 @@ def ihsg_etl_pipeline():
         df['rsi'] = 100 - (100 / (1 + rs))
         
         # 3. Buang data yang MA50-nya kosong (50 hari pertama)
-        df = df.dropna().copy()
+        kolom_wajib = [
+            'Date', 'Close_IHSG', 'top4_volume', 
+            'Close_BBCA', 'Close_BBRI', 'Close_BMRI', 'Close_BBNI', 
+            'ma50', 'rsi'
+        ]
+        df = df[kolom_wajib].dropna().copy()
         
         # 4. Logika Bisnis: Status Pasar (Dihitung untuk SEMUA baris)
         def get_status(row):
