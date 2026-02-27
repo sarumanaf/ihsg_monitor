@@ -21,6 +21,7 @@ kunci_cache = f"{now_wib.strftime('%Y-%m-%d_%H')}"
 def load_data(key):
     # Parameter 'key' ini memaksa Streamlit mereset cache jika nilainya berubah
     db_uri = st.secrets["SUPABASE_URI"]
+    conn = psycopg2.connect(db_uri)
     
     # Ambil data dari terlama ke terbaru
     query = "SELECT * FROM market_sentiment ORDER BY tanggal ASC"
